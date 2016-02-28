@@ -4,6 +4,7 @@ import instances.Grid;
 import instances.UnmergeableGridException;
 import utils.SubsetIterator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,7 +18,9 @@ public class EnumerationAlgorithm extends GridAlgorithm{
 
     @Override
     public void compute(){
-        List<Integer> lines = this.grid.mergeableLines();
+        Grid current = this.grid.simplify();
+
+        List<Integer> lines = current.mergeableLines();
 
         SubsetIterator<Integer> linesIt = new SubsetIterator<Integer>(lines);
 
@@ -26,7 +29,7 @@ public class EnumerationAlgorithm extends GridAlgorithm{
         while(linesIt.hasNext()){
             try {
                 List<Integer> subLines = linesIt.next();
-                Grid g1 = this.grid.mergeLines(subLines);
+                Grid g1 = current.mergeLines(subLines);
                 List<Integer> columns = g1.mergeableColumns();
                 SubsetIterator<Integer> columnsIt = new SubsetIterator<Integer>(columns);
                 while(columnsIt.hasNext()){

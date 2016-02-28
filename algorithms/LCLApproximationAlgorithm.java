@@ -19,6 +19,8 @@ public class LCLApproximationAlgorithm extends GridAlgorithm{
     @Override
     public void compute() {
         try {
+
+
             GridAlgorithmOutput tCL = this.computeCL();
             GridAlgorithmOutput tLC = this.computeLC();
 
@@ -36,7 +38,8 @@ public class LCLApproximationAlgorithm extends GridAlgorithm{
         List<Integer> mergedLines = new LinkedList<Integer>();
         List<Integer> mergedColumns = new LinkedList<Integer>();
         Grid g, g2, gClone;
-        gClone = (Grid) this.grid.clone();
+        g = this.grid.simplify();
+        gClone = (Grid) g.clone();
 
         outer : for(int line = gClone.getSizex()-2; line >= 0; line--){
             for(int column = 0; column < gClone.getSizey(); column++) {
@@ -50,7 +53,7 @@ public class LCLApproximationAlgorithm extends GridAlgorithm{
             }
         }
 
-        g = this.grid.mergeLines(mergedLines);
+        g = g.mergeLines(mergedLines);
         gClone = (Grid) g.clone();
 
 
@@ -74,7 +77,8 @@ public class LCLApproximationAlgorithm extends GridAlgorithm{
         List<Integer> mergedLines = new LinkedList<Integer>();
         List<Integer> mergedColumns = new LinkedList<Integer>();
         Grid g, g2, gClone;
-        gClone = (Grid) this.grid.clone();
+        g = this.grid.simplify();
+        gClone = (Grid) g.clone();
 
         outer : for(int column = gClone.getSizey()-2; column >= 0; column--){
             for(int line = 0; line < gClone.getSizex(); line++) {
@@ -88,7 +92,7 @@ public class LCLApproximationAlgorithm extends GridAlgorithm{
             }
         }
 
-        g = this.grid.mergeColumns(mergedColumns);
+        g = g.mergeColumns(mergedColumns);
         gClone = (Grid) g.clone();
 
         outer : for(int line = gClone.getSizex()-2; line >= 0; line--){

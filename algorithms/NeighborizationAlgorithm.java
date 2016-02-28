@@ -23,8 +23,8 @@ public class NeighborizationAlgorithm extends GridAlgorithm {
         List<Integer> lines = new LinkedList<Integer>();
         List<Integer> columns = new LinkedList<Integer>();
 
-        Grid current = this.grid;
 
+        Grid current = this.grid.simplify();
         List<Integer> mergeableLines = current.mergeableLines();
         List<Integer> mergeableColumns = current.mergeableColumns();
 

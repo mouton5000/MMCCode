@@ -1,6 +1,7 @@
 import algorithms.*;
 import instances.Grid;
 import instances.IndexOutOfBoundGridException;
+import utils.FileManager;
 
 import java.util.Arrays;
 
@@ -18,72 +19,67 @@ public class Main {
 
     public static void test1(){
 
-        for(int size = 5; size <= 15; size+=5) {
-            for (double p = 0.1; p <= 0.5; p += 0.1) {
+        double[] probs = {0.01,0.02,0.03,0.04,0.05,0.1,0.2,0.3};
+
+        FileManager fm = new FileManager();
+        fm.openWrite("test1Results.txt");
+
+        fm.writeln("##############################");
+
+        for(int size = 5; size <= 20; size+=5) {
+            for (double p : probs) {
                 for (int i = 0; i <= 50; i++) {
+                    System.out.println(size+" "+p+" "+i);
                     Grid g = Grid.getRandomGrid(size, size, p);
 
                     long time;
 
-//                    time = System.currentTimeMillis();
-//                    EnumerationAlgorithm alg = new EnumerationAlgorithm(g);
-//                    alg.compute();
-//                    long algtime = System.currentTimeMillis()-time;
+                    System.out.println(0);
+                    time = System.currentTimeMillis();
+                    EnumerationAlgorithm alg = new EnumerationAlgorithm(g);
+                    alg.compute();
+                    long algtime = System.currentTimeMillis()-time;
+
+                    System.out.println(1);
 
                     time = System.currentTimeMillis();
                     LCLApproximationAlgorithm algLCL = new LCLApproximationAlgorithm(g);
                     algLCL.compute();
                     long timelcl = System.currentTimeMillis()-time;
+                    System.out.println(2);
 
                     time = System.currentTimeMillis();
                     GreedyAlgorithm algGreed = new GreedyAlgorithm(g);
                     algGreed.compute();
                     long timeGreedy = System.currentTimeMillis()-time;
+                    System.out.println(3);
 
                     time = System.currentTimeMillis();
                     NeighborizationAlgorithm algNeigh = new NeighborizationAlgorithm(g);
                     algNeigh.compute();
                     long timeNeigh = System.currentTimeMillis()-time;
 
-                    System.out.println(
-                            size + " " +
-                                    p +" " +
-                                    i +" " +
-//                                  algtime + " " +
-//                                  alg.getOutputDensity() +" " +
-                                    timelcl +" "+
-                                    algLCL.getOutputDensity()+" "+
-                                    timeGreedy +" "+
-                                    algGreed.getOutputDensity()+" "+
-                                    timeNeigh +" "+
-                                    algNeigh.getOutputDensity()+" "+
-                                    " "
-                    );
+                    String s= size + " " +
+                            p +" " +
+                            i +" " +
+                            algtime + " " +
+                            alg.getOutputDensity() +" " +
+                            timelcl +" "+
+                            algLCL.getOutputDensity()+" "+
+                            timeGreedy +" "+
+                            algGreed.getOutputDensity()+" "+
+                            timeNeigh +" "+
+                            algNeigh.getOutputDensity();
 
+
+                    fm.writeln(s);
                 }
+                fm.flush();
             }
         }
     }
 
-    public static void test2(){
-        for(int i = 0 ; i<1; i++) {
-            System.out.println(i);
-            int n = 5;
-            Grid g = Grid.getRandomGrid(n, n, 3);
 
-            System.out.println(g);
-
-            NeighborizationAlgorithm alg = new NeighborizationAlgorithm(g);
-            alg.compute();
-
-
-//            LCLApproximationAlgorithm alg2 = new LCLApproximationAlgorithm(g);
-//            alg2.compute();
-//
-//            System.out.println(Grid.test);
-        }
-
-    }
 
     public static void test3(){
         int[] lclGreedyResults = new int[3];
@@ -149,6 +145,35 @@ public class Main {
         System.out.println("lcl VS greedy : " + Arrays.toString(lclGreedyResults));
 //        System.out.println("lcl VS neigh : " + Arrays.toString(lclNeighResults));
 //        System.out.println("greedy VS neigh : " + Arrays.toString(greedyNeighResults));
+    }
+
+    public static void test4(){
+        for(int size = 100; size <= 1000000; size*=10) {
+            for (int n = 100; n <= Math.min(size*size, 5000); n += 100 ) {
+                long sumLCL = 0L;
+                for (int i = 0; i <= 50; i++) {
+                    Grid g = Grid.getRandomGrid(size, size, n);
+
+                    long time;
+                    time = System.currentTimeMillis();
+                    LCLApproximationAlgorithm algLCL = new LCLApproximationAlgorithm(g);
+                    algLCL.compute();
+                    long timelcl = System.currentTimeMillis()-time;
+                    sumLCL += timelcl;
+
+                    System.out.print(
+                            i + " " +
+                                    timelcl +" "
+                    );
+
+                }
+                System.out.println(
+                        size + " " +
+                                n +" " +
+                                sumLCL +" "
+                );
+            }
+        }
     }
 
 }

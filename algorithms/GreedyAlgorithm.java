@@ -17,7 +17,8 @@ public class GreedyAlgorithm extends GridAlgorithm{
     @Override
     public void compute() {
 
-        Grid current = this.grid;
+
+        Grid current = this.grid.simplify();
         List<Integer> ml = current.mergeableLines();
         List<Integer> mc = current.mergeableColumns();
 

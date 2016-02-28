@@ -194,7 +194,7 @@ public class Grid implements Cloneable{
 
         int lastLine = lines.get(lines.size() - 1);
         if (lastLine > this.sizex - 2)
-            throw new IndexOutOfBoundGridException(this.sizex, this.sizey, lastLine, 0);
+            throw new IndexOutOfBoundGridException(this.sizex, this.sizey, lastLine+1, 0);
 
         int offset = 0;
         int[] offsets = new int[this.sizex];
@@ -296,9 +296,9 @@ public class Grid implements Cloneable{
 
         Collections.sort(columns);
 
-        int lastColumns = columns.get(columns.size() - 1);
-        if (lastColumns > this.sizey - 2)
-            throw new IndexOutOfBoundGridException(this.sizex, this.sizey, 0, lastColumns);
+        int lastColumn = columns.get(columns.size() - 1);
+        if (lastColumn > this.sizey - 2)
+            throw new IndexOutOfBoundGridException(this.sizex, this.sizey, 0, lastColumn+1);
 
         int offset = 0;
         int[] offsets = new int[this.sizey];
@@ -347,6 +347,29 @@ public class Grid implements Cloneable{
             }
         }
         return d;
+    }
+
+    public Grid simplify(){
+        List<Integer> linesToMerge = new ArrayList<Integer>();
+        List<Integer> columnsToMerge = new ArrayList<Integer>();
+
+        outer : for(int line = 0; line < this.getSizex()-1; line++){
+            for(int column = 0; column < this.getSizey(); column++){
+                if(this.hasPoint(line,column))
+                    continue outer;
+            }
+            linesToMerge.add(line);
+        }
+
+        outer : for(int column = 0; column < this.getSizey()-1; column++){
+            for(int line = 0; line < this.getSizex(); line++){
+                if(this.hasPoint(line,column))
+                    continue outer;
+            }
+            columnsToMerge.add(column);
+        }
+
+        return this.mergeLines(linesToMerge).mergeColumns(columnsToMerge);
     }
 
 
