@@ -25,7 +25,7 @@ public class GreedyAlgorithm extends GridAlgorithm{
         List<Integer> lines = new ArrayList<Integer>();
         List<Integer> columns = new ArrayList<Integer>();
 
-        int currentDensity = this.grid.getDensity();
+        int currentDensity = current.getDensity();
 
         while(!ml.isEmpty() || !mc.isEmpty()){
             boolean lineBetter = true;
