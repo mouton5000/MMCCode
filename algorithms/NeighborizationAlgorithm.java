@@ -25,6 +25,7 @@ public class NeighborizationAlgorithm extends GridAlgorithm {
 
 
         Grid current = this.grid.simplify();
+//        Grid current = this.grid;
         List<Integer> mergeableLines = current.mergeableLines();
         List<Integer> mergeableColumns = current.mergeableColumns();
 
@@ -67,6 +68,7 @@ public class NeighborizationAlgorithm extends GridAlgorithm {
         lines = Grid.iterativeListToGlobalList(lines);
         columns = Grid.iterativeListToGlobalList(columns);
 
+//        output = new GridAlgorithmOutput(grid, new ArrayList<Integer>(), new ArrayList<>(), 0);
 
 
         output = new GridAlgorithmOutput(current, lines, columns, current.getDensity());
@@ -75,6 +77,7 @@ public class NeighborizationAlgorithm extends GridAlgorithm {
 
     private static int numberOfNeighbourizable(Grid g){
         List<PossibleNeighbours> possibleNeighbourss = NeighborizationAlgorithm.possibleNeighbours(g);
+
 
         int nb = 0;
         for (PossibleNeighbours possibleNeighbours : possibleNeighbourss) {
@@ -154,7 +157,7 @@ public class NeighborizationAlgorithm extends GridAlgorithm {
 
 
             List<Integer> lines = new LinkedList<Integer>();
-            for (int x = x2-1; x >= x1; x--)
+            for (int x = x1; x < x2; x++)
                 lines.add(x);
 
             try { test1.mergeLines(lines);
@@ -173,7 +176,7 @@ public class NeighborizationAlgorithm extends GridAlgorithm {
             Point pt1 = c.pt1;
             Point pt2 = c.pt2;
 
-            if(!(pt1.x <= pt2.x+1 && pt1.y >= pt2.y-1 && pt1.y <= pt2.y+1))
+//            if(!(pt1.x <= pt2.x+1 && pt1.x >= pt2.x-1 && pt1.y >= pt2.y-1 && pt1.y <= pt2.y+1))
                 possibleNeighbours.add(c);
         }
 
@@ -349,6 +352,11 @@ public class NeighborizationAlgorithm extends GridAlgorithm {
             if(!(o instanceof PossibleNeighbours))
                 return false;
             return this.pt1.equals(((PossibleNeighbours) o).pt1) && this.pt2.equals(((PossibleNeighbours) o).pt2);
+        }
+
+        @Override
+        public String toString() {
+            return "(" + pt1.toString()+";"+pt2.toString()+")";
         }
     }
 }
