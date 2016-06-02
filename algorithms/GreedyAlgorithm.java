@@ -19,6 +19,7 @@ public class GreedyAlgorithm extends GridAlgorithm{
 
 
         Grid current = this.grid.simplify();
+
         List<Integer> ml = current.mergeableLines();
         List<Integer> mc = current.mergeableColumns();
 

@@ -350,8 +350,37 @@ public class Grid implements Cloneable{
     }
 
     public Grid simplify(){
+        List<Integer> linesToMerge = linesToSimplify();
+        List<Integer> columnsToMerge = columnsToSimplify();
+
+        boolean empty = true;
+        for(int line = 0; line < this.getSizex() ; line++){
+            if(this.hasPoint(line, this.getSizey()-1)){
+                empty = false;
+                break;
+            }
+        }
+
+        if(empty)
+            columnsToMerge.add(this.getSizey()-2);
+
+        empty = true;
+        for(int column = 0; column < this.getSizey() ; column++){
+            if(this.hasPoint(this.getSizex()-1, column)){
+                empty = false;
+                break;
+            }
+        }
+
+        if(empty)
+        linesToMerge.add(this.getSizex()-2);
+
+        return this.mergeLines(linesToMerge).mergeColumns(columnsToMerge);
+
+    }
+
+    public List<Integer> linesToSimplify(){
         List<Integer> linesToMerge = new ArrayList<Integer>();
-        List<Integer> columnsToMerge = new ArrayList<Integer>();
 
         outer : for(int line = 0; line < this.getSizex()-1; line++){
             for(int column = 0; column < this.getSizey(); column++){
@@ -361,6 +390,13 @@ public class Grid implements Cloneable{
             linesToMerge.add(line);
         }
 
+        return linesToMerge;
+    }
+
+    public List<Integer> columnsToSimplify(){
+        List<Integer> columnsToMerge = new ArrayList<Integer>();
+
+
         outer : for(int column = 0; column < this.getSizey()-1; column++){
             for(int line = 0; line < this.getSizex(); line++){
                 if(this.hasPoint(line,column))
@@ -369,7 +405,7 @@ public class Grid implements Cloneable{
             columnsToMerge.add(column);
         }
 
-        return this.mergeLines(linesToMerge).mergeColumns(columnsToMerge);
+        return columnsToMerge;
     }
 
 

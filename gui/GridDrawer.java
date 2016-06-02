@@ -11,8 +11,7 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -30,15 +29,17 @@ import utils.Couple;
  */
 public class GridDrawer extends Application{
 
-    public static final int SIZEX = 10;
-    public static final int SIZEY = 10;
-    public static final int LENGTH = 30;
+    public static int SIZEX = 10;
+    public static int SIZEY = 10;
+    public static int LENGTH = 30;
 
-    public static final int MARGIN = 50;
+    public static final int MARGIN = 30;
 
 
     private static final int ANIMATION_DURATION = 100;
 
+
+    private Stage stage;
 
     public Grid grid;
     public Grid currentGrid;
@@ -47,10 +48,20 @@ public class GridDrawer extends Application{
     public Rectangle downRect;
     public Rectangle rightRect;
 
-    public Button mainButton;
-    public Button lclButton;
-    public Button greedButton;
-    public Button neighborizationGreedyButton;
+    public CheckMenuItem modeButton;
+    public MenuItem exactButton;
+    public MenuItem lclButton;
+    public MenuItem greedButton;
+    public MenuItem neighborizationGreedyButton;
+    public MenuItem newButton;
+    public MenuItem saveButton;
+    public MenuItem loadButton;
+    public MenuItem exportButton;
+    public MenuItem flipHButton;
+    public MenuItem flipVButton;
+    public MenuItem simplifyButton;
+    public MenuItem eraseGridButton;
+
 
     public Pane root;
 
@@ -60,13 +71,28 @@ public class GridDrawer extends Application{
     @Override
     public void start(Stage stage) throws Exception {
 
+        this.stage = stage;
+
         grid = new Grid(SIZEX, SIZEY);
         currentGrid = grid;
+
+        reinitDraw();
+
+        stage.show();
+
+
+    }
+
+    public void reinitDraw(){
+
+        SIZEX = grid.getSizex();
+        SIZEY = grid.getSizey();
+
         circles = new Shape[SIZEX][SIZEY];
         downRect = new Rectangle(MARGIN, MAXDOWN(), MAXRIGHT() - MARGIN, 0);
         rightRect = new Rectangle(MAXRIGHT(), MARGIN, 0, MAXDOWN() - MARGIN);
 
-        VBox box = new VBox(MARGIN);
+        VBox box = new VBox();
 
         root = new Pane();
 
@@ -105,50 +131,116 @@ public class GridDrawer extends Application{
 
         root.getChildren().addAll(downRect, rightRect);
 
-        gmph = new GridMousePressedHandler(this,root);
+        gmph = new GridMousePressedHandler(this);
         gmmh = new GridMouseMovedHandler(this, root);
 
+        MenuBar menuBar = new MenuBar();
+        menuBar.setMinHeight(MARGIN);
+        menuBar.setMaxHeight(MARGIN);
 
-        box.getChildren().add(root);
 
-        HBox hbox = new HBox(15);
+        Menu fileMenu = new Menu("File");
+        Menu gridMenu = new Menu("Grid");
+        Menu toolMenu = new Menu("Tools");
 
-        mainButton = new Button();
-        mainButton.setText("Start");
-        MainButtonHandler btnHandler = new MainButtonHandler(this);
-        mainButton.setOnAction(btnHandler);
+        menuBar.getMenus().addAll(fileMenu, gridMenu, toolMenu);
 
-        lclButton = new Button();
+
+
+        modeButton = new CheckMenuItem();
+        modeButton.setText("Edit mode");
+        ModeButtonHandler btnHandler = new ModeButtonHandler(this);
+        modeButton.setOnAction(btnHandler);
+
+
+        exactButton = new MenuItem();
+        exactButton.setText("Exact");
+        AlgorithmButtonHandler exactHandler = new AlgorithmButtonHandler(new EnumerationAlgorithm(grid), this);
+        exactButton.setOnAction(exactHandler);
+
+        lclButton = new MenuItem();
         lclButton.setText("LCL");
         AlgorithmButtonHandler lclHandler = new AlgorithmButtonHandler(new LCLApproximationAlgorithm(grid), this);
         lclButton.setOnAction(lclHandler);
 
-        greedButton = new Button();
+        greedButton = new MenuItem();
         greedButton.setText("Greedy");
         AlgorithmButtonHandler greedHandler = new AlgorithmButtonHandler(new GreedyAlgorithm(grid), this);
         greedButton.setOnAction(greedHandler);
 
-        neighborizationGreedyButton = new Button();
+        neighborizationGreedyButton = new MenuItem();
         neighborizationGreedyButton.setText("Neighborization");
-        AlgorithmButtonHandler neighborizationHandler = new AlgorithmButtonHandler(new NeighborizationAlgorithm2(grid), this);
+        AlgorithmButtonHandler neighborizationHandler = new AlgorithmButtonHandler(new NeighborizationAlgorithm(grid), this);
         neighborizationGreedyButton.setOnAction(neighborizationHandler);
 
-        hbox.getChildren().addAll(mainButton, lclButton, greedButton, neighborizationGreedyButton);
-        hbox.setAlignment(Pos.BASELINE_CENTER);
+        toolMenu.getItems().addAll(modeButton, new SeparatorMenuItem(), exactButton, lclButton, greedButton, neighborizationGreedyButton);
 
-        box.getChildren().add(hbox);
+
+
+
+        NewSaveLoadButtonHandler slh = new NewSaveLoadButtonHandler(this);
+
+        newButton = new MenuItem();
+        newButton.setText("New");
+        newButton.setOnAction(slh);
+
+        saveButton = new MenuItem();
+        saveButton.setText("Save");
+        saveButton.setOnAction(slh);
+
+        loadButton = new MenuItem();
+        loadButton.setText("Load");
+        loadButton.setOnAction(slh);
+
+        ExportButtonHandler eh = new ExportButtonHandler(this);
+
+        exportButton = new MenuItem();
+        exportButton.setText("Export");
+        exportButton.setOnAction(eh);
+
+        fileMenu.getItems().addAll(newButton, new SeparatorMenuItem(),
+                saveButton, loadButton, new SeparatorMenuItem(),
+                exportButton);
+
+        FlipButtonHandler fliph = new FlipButtonHandler(this);
+
+        flipHButton = new MenuItem();
+        flipHButton.setText("Flip grid horizontally");
+        flipHButton.setOnAction(fliph);
+
+        flipVButton = new MenuItem();
+        flipVButton.setText("Flip grid vertically");
+        flipVButton.setOnAction(fliph);
+
+        SimplifyButtonHandler simplh = new SimplifyButtonHandler(this);
+
+        simplifyButton = new MenuItem();
+        simplifyButton.setText("Simplify grid");
+        simplifyButton.setOnAction(simplh);
+
+        EraseGridButtonHandler eraseh = new EraseGridButtonHandler(this);
+
+        eraseGridButton = new MenuItem();
+        eraseGridButton.setText("Erase initial grid");
+        eraseGridButton.setOnAction(eraseh);
+
+        gridMenu.getItems().addAll(flipHButton, flipVButton, simplifyButton, eraseGridButton);
+
+
+        box.getChildren().addAll(menuBar, root);
         box.setAlignment(Pos.TOP_CENTER);
 
+        Scene scene = new Scene(box, 2*MARGIN + SIZEY * LENGTH, 5*MARGIN + SIZEX * LENGTH);
+        root.setOnMousePressed(gmph);
+        root.setOnMouseMoved(gmmh);
 
-        Scene scene = new Scene(box, 2*MARGIN + SIZEY * LENGTH, 3*MARGIN + SIZEX * LENGTH);
-        scene.setOnMousePressed(gmph);
-        scene.setOnMouseMoved(gmmh);
 
-        stage.setTitle("Hello World!");
+        stage.setTitle("Grid Drawer");
         stage.setScene(scene);
-        stage.show();
+        stage.setWidth(2*MARGIN + SIZEY * LENGTH);
+        stage.setHeight(5*MARGIN + SIZEX * LENGTH);
 
-
+        reinit();
     }
 
     public void mergeLine(int line){
@@ -264,8 +356,21 @@ public class GridDrawer extends Application{
 
     }
 
+    public void addPoint(int line, int column){
+        Shape circle = GridDrawer.getCircleShape(line, column);
+        circle.setOpacity(1.0);
+        this.circles[line][column] = circle;
+        root.getChildren().add(circle);
+    }
+
+    public void removePoint(int line, int column){
+        Shape circle = this.circles[line][column];
+        this.circles[line][column] = null;
+        root.getChildren().remove(circle);
+    }
+
     public void reinit(){
-        mainButton.setText("Start");
+        modeButton.setSelected(false);
         for(int line = 0; line < GridDrawer.SIZEX; line++){
             for(int column = 0; column < GridDrawer.SIZEY; column++){
                 Shape circle = circles[line][column];
@@ -273,9 +378,7 @@ public class GridDrawer extends Application{
                 if(circle != null)
                     root.getChildren().remove(circle);
                 if(grid.hasPoint(line,column)) {
-                    circle = GridDrawer.getCircleShape(line, column);
-                    circles[line][column] = circle;
-                    root.getChildren().add(circle);
+                    this.addPoint(line, column);
                 }
             }
         }

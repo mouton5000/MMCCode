@@ -18,13 +18,11 @@ import utils.Couple;
 public class GridMousePressedHandler implements EventHandler<MouseEvent> {
 
 
-    private Pane root;
     private GridDrawer drawer;
     private boolean edit;
 
-    public GridMousePressedHandler(GridDrawer drawer, Pane root) {
+    public GridMousePressedHandler(GridDrawer drawer) {
         this.drawer = drawer;
-        this.root = root;
         this.edit = true;
     }
 
@@ -50,16 +48,10 @@ public class GridMousePressedHandler implements EventHandler<MouseEvent> {
             return;
 
         boolean add = drawer.grid.invertPoint(line, column);
-        if (add) {
-            Shape circle = GridDrawer.getCircleShape(line, column);
-            circle.setOpacity(1.0);
-            drawer.circles[line][column] = circle;
-            root.getChildren().add(circle);
-        } else {
-            Shape circle = drawer.circles[line][column];
-            drawer.circles[line][column] = null;
-            root.getChildren().remove(circle);
-        }
+        if (add)
+            this.drawer.addPoint(line, column);
+        else
+            this.drawer.removePoint(line, column);
     }
 
     public void handlePlay(int x, int y) {
@@ -67,16 +59,12 @@ public class GridMousePressedHandler implements EventHandler<MouseEvent> {
         Integer line = lineColumn.first;
         Integer column = lineColumn.second;
 
-        if (line == null && column == null) {
+        if (line == null && column == null)
             return;
-        }
-        else if (line == null) {
+        else if (line == null)
             drawer.mergeColumn(column);
-        }
-        else if (column == null) {
+        else if (column == null)
             drawer.mergeLine(line);
-        }
-
     }
 
     public void setEdit(boolean edit) {
