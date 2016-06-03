@@ -13,11 +13,16 @@ public abstract class GridAlgorithm {
     protected GridAlgorithmOutput output;
 
 
+    protected GridAlgorithm() {}
     protected GridAlgorithm(Grid grid){
         this.grid = grid;
     }
 
     public abstract void compute();
+
+    public void setGrid(Grid grid) {
+        this.grid = grid;
+    }
 
     public Grid getOutputGrid() {
         return output.getGrid();

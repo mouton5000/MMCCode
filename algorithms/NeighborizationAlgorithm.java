@@ -2,7 +2,6 @@ package algorithms;
 
 import instances.Grid;
 import instances.UnmergeableGridException;
-import utils.Couple;
 
 import java.util.*;
 
@@ -12,6 +11,7 @@ import java.util.*;
 public class NeighborizationAlgorithm extends GridAlgorithm {
 
 
+    public NeighborizationAlgorithm() {}
     public NeighborizationAlgorithm(Grid grid) {
         super(grid);
     }
@@ -25,9 +25,10 @@ public class NeighborizationAlgorithm extends GridAlgorithm {
 
 
         Grid current = this.grid.simplify();
-//        Grid current = this.grid;
         List<Integer> mergeableLines = current.mergeableLines();
         List<Integer> mergeableColumns = current.mergeableColumns();
+
+
 
         while(!mergeableLines.isEmpty() || !mergeableColumns.isEmpty()){
             int bestNbPossibleNeighbours = -1;
@@ -67,10 +68,6 @@ public class NeighborizationAlgorithm extends GridAlgorithm {
 
         lines = Grid.iterativeListToGlobalList(lines);
         columns = Grid.iterativeListToGlobalList(columns);
-
-//        output = new GridAlgorithmOutput(grid, new ArrayList<Integer>(), new ArrayList<>(), 0);
-
-
         output = new GridAlgorithmOutput(current, lines, columns, current.getDensity());
 
     }

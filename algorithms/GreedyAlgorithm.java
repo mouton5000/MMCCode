@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class GreedyAlgorithm extends GridAlgorithm{
 
+    public GreedyAlgorithm() {}
     public GreedyAlgorithm(Grid grid) {
         super(grid);
     }

@@ -4,7 +4,6 @@ import instances.Grid;
 import instances.UnmergeableGridException;
 import utils.SubsetIterator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,6 +11,7 @@ import java.util.List;
  */
 public class EnumerationAlgorithm extends GridAlgorithm{
 
+    public EnumerationAlgorithm(){}
     public EnumerationAlgorithm(Grid grid){
         super(grid);
     }

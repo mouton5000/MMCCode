@@ -1,16 +1,16 @@
 package algorithms;
 
 import instances.Grid;
-import instances.UnmergeableGridException;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * Created by mouton on 05/02/16.
  */
 public class LCLApproximationAlgorithm extends GridAlgorithm{
+
+    public LCLApproximationAlgorithm() {}
 
     public LCLApproximationAlgorithm(Grid grid){
         super(grid);
