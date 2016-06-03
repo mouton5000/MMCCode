@@ -8,6 +8,7 @@ import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.util.Duration;
 import utils.Couple;
@@ -47,11 +48,16 @@ public class GridMousePressedHandler implements EventHandler<MouseEvent> {
         if (column == null)
             return;
 
-        boolean add = drawer.grid.invertPoint(line, column);
-        if (add)
-            this.drawer.addPoint(line, column);
-        else
+        Color color = this.drawer.currentColor;
+        boolean add = this.drawer.grid.hasPoint(line, column);
+        if (!add) {
+            this.drawer.grid.addPoint(line, column, color);
+            this.drawer.addPoint(line, column, color);
+        }
+        else {
             this.drawer.removePoint(line, column);
+            this.drawer.grid.removePoint(line, column);
+        }
     }
 
     public void handlePlay(int x, int y) {

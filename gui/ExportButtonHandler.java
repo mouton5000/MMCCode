@@ -1,12 +1,15 @@
 package gui;
 
 import instances.Grid;
+import instances.GridT;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
 import utils.FileManager;
 
@@ -101,7 +104,7 @@ public class ExportButtonHandler implements EventHandler<ActionEvent> {
 
     }
 
-    private void export(String exportFileName, Boolean putOnes, Grid grid) {
+    private void export(String exportFileName, Boolean putOnes, GridT<Color> grid) {
         FileManager fm = new FileManager();
         fm.openErase(exportFileName);
 
@@ -116,20 +119,31 @@ public class ExportButtonHandler implements EventHandler<ActionEvent> {
         fm.writeln();
 
 
+        Color color;
         for(int line = 0; line < grid.getSizex(); line++){
             boolean atLeast1 = false;
             for(int column = 0; column < grid.getSizey(); column++){
-                if(!grid.hasPoint(line, column))
+                if((color = grid.getPoint(line, column)) == null)
                     continue;
                 atLeast1 = true;
-                if(putOnes)
-                    fm.writeln("        \\prone{O}{"+(line+1)+"}{"+(column+1)+"};");
-                else
-                    fm.writeln("        \\prbul{O}{"+(line+1)+"}{"+(column+1)+"};");
+                double red = color.getRed();
+                double green = color.getGreen();
+                double blue = color.getBlue();
+                String colorString = "{"+red+","+green+","+blue+"}";
+                fm.writeln("\\definecolor{tempcolor}{rgb}" + colorString);
+                String paramsString = "{O}{"+(line+1)+"}{"+(column+1)+"}{tempcolor};";
+                String commandString = putOnes?"\\pronec":"\\prbulc";
+                fm.writeln("        "+commandString+paramsString);
             }
             if(atLeast1)
                fm.writeln();
         }
+
+        for(int line = 5; line-1 < grid.getSizex(); line += 5)
+            fm.writeln("\\draw ($(O)+(0,"+(0.25 + (line-1) * 0.5)+")$) node[anchor=east] {$"+line+"$};");
+        for(int column= 5; column-1 < grid.getSizey(); column += 5)
+            fm.writeln("\\draw ($(O)+("+(0.25 + (column-1) * 0.5)+",-0.3)$) node {$"+column+"$};");
+
         fm.writeln();
         fm.writeln("    \\end{tikzpicture}");
         fm.writeln("    \\caption{}");

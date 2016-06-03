@@ -2,6 +2,7 @@ package gui;
 
 import algorithms.*;
 import instances.Grid;
+import instances.GridT;
 import instances.IndexOutOfBoundGridException;
 import instances.UnmergeableGridException;
 import javafx.animation.KeyFrame;
@@ -24,6 +25,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import utils.Couple;
 
+import java.io.File;
+
 /**
  * Created by mouton on 23/02/16.
  */
@@ -41,26 +44,31 @@ public class GridDrawer extends Application{
 
     private Stage stage;
 
-    public Grid grid;
-    public Grid currentGrid;
+    public GridT<Color> grid;
+    public GridT<Color> currentGrid;
 
     public Shape[][] circles;
     public Rectangle downRect;
     public Rectangle rightRect;
+
+    public Color currentColor;
 
     public CheckMenuItem modeButton;
     public MenuItem exactButton;
     public MenuItem lclButton;
     public MenuItem greedButton;
     public MenuItem neighborizationGreedyButton;
+
     public MenuItem newButton;
     public MenuItem saveButton;
     public MenuItem loadButton;
     public MenuItem exportButton;
+
     public MenuItem flipHButton;
     public MenuItem flipVButton;
     public MenuItem simplifyButton;
     public MenuItem eraseGridButton;
+    public MenuItem colorButton;
 
 
     public Pane root;
@@ -70,11 +78,11 @@ public class GridDrawer extends Application{
 
     @Override
     public void start(Stage stage) throws Exception {
-
         this.stage = stage;
 
-        grid = new Grid(SIZEX, SIZEY);
+        grid = new GridT<Color>(SIZEX, SIZEY);
         currentGrid = grid;
+        currentColor = Color.BLACK;
 
         reinitDraw();
 
@@ -155,22 +163,22 @@ public class GridDrawer extends Application{
 
         exactButton = new MenuItem();
         exactButton.setText("Exact");
-        AlgorithmButtonHandler exactHandler = new AlgorithmButtonHandler(new EnumerationAlgorithm(grid), this);
+        AlgorithmButtonHandler exactHandler = new AlgorithmButtonHandler(new EnumerationAlgorithm(), this);
         exactButton.setOnAction(exactHandler);
 
         lclButton = new MenuItem();
         lclButton.setText("LCL");
-        AlgorithmButtonHandler lclHandler = new AlgorithmButtonHandler(new LCLApproximationAlgorithm(grid), this);
+        AlgorithmButtonHandler lclHandler = new AlgorithmButtonHandler(new LCLApproximationAlgorithm(), this);
         lclButton.setOnAction(lclHandler);
 
         greedButton = new MenuItem();
         greedButton.setText("Greedy");
-        AlgorithmButtonHandler greedHandler = new AlgorithmButtonHandler(new GreedyAlgorithm(grid), this);
+        AlgorithmButtonHandler greedHandler = new AlgorithmButtonHandler(new GreedyAlgorithm(), this);
         greedButton.setOnAction(greedHandler);
 
         neighborizationGreedyButton = new MenuItem();
         neighborizationGreedyButton.setText("Neighborization");
-        AlgorithmButtonHandler neighborizationHandler = new AlgorithmButtonHandler(new NeighborizationAlgorithm(grid), this);
+        AlgorithmButtonHandler neighborizationHandler = new AlgorithmButtonHandler(new NeighborizationAlgorithm(), this);
         neighborizationGreedyButton.setOnAction(neighborizationHandler);
 
         toolMenu.getItems().addAll(modeButton, new SeparatorMenuItem(), exactButton, lclButton, greedButton, neighborizationGreedyButton);
@@ -224,7 +232,13 @@ public class GridDrawer extends Application{
         eraseGridButton.setText("Erase initial grid");
         eraseGridButton.setOnAction(eraseh);
 
-        gridMenu.getItems().addAll(flipHButton, flipVButton, simplifyButton, eraseGridButton);
+        ColorButtonHandler colorh = new ColorButtonHandler(this);
+        colorButton = new MenuItem();
+        colorButton.setText("Choose color");
+        colorButton.setOnAction(colorh);
+
+        gridMenu.getItems().addAll(flipHButton, flipVButton, simplifyButton, eraseGridButton, new SeparatorMenuItem(),
+                colorButton);
 
 
         box.getChildren().addAll(menuBar, root);
@@ -356,8 +370,8 @@ public class GridDrawer extends Application{
 
     }
 
-    public void addPoint(int line, int column){
-        Shape circle = GridDrawer.getCircleShape(line, column);
+    public void addPoint(int line, int column, Color color){
+        Shape circle = GridDrawer.getCircleShape(line, column, color);
         circle.setOpacity(1.0);
         this.circles[line][column] = circle;
         root.getChildren().add(circle);
@@ -366,19 +380,21 @@ public class GridDrawer extends Application{
     public void removePoint(int line, int column){
         Shape circle = this.circles[line][column];
         this.circles[line][column] = null;
-        root.getChildren().remove(circle);
+        if(circle != null)
+            root.getChildren().remove(circle);
     }
 
     public void reinit(){
         modeButton.setSelected(false);
+        Color color;
         for(int line = 0; line < GridDrawer.SIZEX; line++){
             for(int column = 0; column < GridDrawer.SIZEY; column++){
                 Shape circle = circles[line][column];
                 circles[line][column] = null;
                 if(circle != null)
                     root.getChildren().remove(circle);
-                if(grid.hasPoint(line,column)) {
-                    this.addPoint(line, column);
+                if((color = grid.getPoint(line, column)) != null) {
+                    this.addPoint(line, column, color);
                 }
             }
         }
@@ -460,8 +476,9 @@ public class GridDrawer extends Application{
         return rect;
     }
 
-    public static Shape getCircleShape(int line, int column) {
+    public static Shape getCircleShape(int line, int column, Color color) {
         Circle circle = new Circle(MARGIN + column * LENGTH + LENGTH / 2, MARGIN + line * LENGTH + LENGTH / 2, LENGTH / 4);
+        circle.setFill(color);
         return circle;
     }
 

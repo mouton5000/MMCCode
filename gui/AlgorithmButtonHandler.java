@@ -1,9 +1,12 @@
 package gui;
 
 import algorithms.GridAlgorithm;
+import instances.Grid;
+import instances.GridT;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.paint.Color;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +26,9 @@ public class AlgorithmButtonHandler  implements EventHandler<ActionEvent> {
 
     @Override
     public void handle(ActionEvent actionEvent) {
+        Grid grid = drawer.grid.getGrid();
+        this.algorithm.setGrid(grid);
+
         drawer.reinit();
 
         ((ModeButtonHandler)drawer.modeButton.getOnAction()).start = false;

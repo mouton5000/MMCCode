@@ -1,12 +1,16 @@
 package gui;
 
 import instances.Grid;
+import instances.GridT;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Shape;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import utils.FileManager;
@@ -100,7 +104,7 @@ public class NewSaveLoadButtonHandler implements EventHandler<ActionEvent> {
             Optional<List<Integer>> result = dialog.showAndWait();
 
             result.ifPresent(linesColumns -> {
-                drawer.grid = new Grid(linesColumns.get(0), linesColumns.get(1));
+                drawer.grid = new GridT<Color>(linesColumns.get(0), linesColumns.get(1));
                 GridDrawer.LENGTH = linesColumns.get(2);
                 drawer.reinitDraw();
             });
@@ -126,7 +130,7 @@ public class NewSaveLoadButtonHandler implements EventHandler<ActionEvent> {
     }
 
     public void save(File f){
-        Grid g = drawer.grid;
+        GridT<Color> g = drawer.grid;
         Integer length = GridDrawer.LENGTH;
 
         FileManager fm = new FileManager();
@@ -136,8 +140,19 @@ public class NewSaveLoadButtonHandler implements EventHandler<ActionEvent> {
         fm.writeln();
         for(int line = 0; line < g.getSizex(); line++) {
             for (int column = 0; column < g.getSizey(); column++){
-                int toWrite = g.hasPoint(line, column)?1:0;
-                fm.write(toWrite+" ");
+                Color color = g.getPoint(line, column);
+                int red, green, blue;
+                if(color == null){
+                    red = -1;
+                    green = -1;
+                    blue = -1;
+                }
+                else{
+                    red = (int)(color.getRed()*255);
+                    green = (int)(color.getGreen()*255);
+                    blue = (int)(color.getBlue()*255);
+                }
+                fm.write(red+" "+green+" "+blue+" ");
             }
             fm.writeln();
             fm.flush();
@@ -157,13 +172,20 @@ public class NewSaveLoadButtonHandler implements EventHandler<ActionEvent> {
 
         fm.readLine();
 
-        Grid g = new Grid(sizeX, sizeY);
+        GridT<Color> g = new GridT<Color>(sizeX, sizeY);
         for(int line = 0; line < g.getSizex(); line++) {
             fileLine = fm.readLine();
+            fileLine = fileLine.trim();
             String[] points = fileLine.split("\\s+");
             for (int column = 0; column < g.getSizey(); column++){
-                if(points[column].equals("1"))
-                    g.addPoint(line, column);
+                if(points[3 * column].equals("-1"))
+                    continue;
+                double red = Integer.valueOf(points[3 * column])/255D;
+                double green = Integer.valueOf(points[3 * column + 1])/255D;
+                double blue = Integer.valueOf(points[3 * column + 2])/255D;
+
+                g.addPoint(line, column, Color.color(red, green, blue));
+
             }
         }
 

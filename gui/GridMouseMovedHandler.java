@@ -112,7 +112,7 @@ public class GridMouseMovedHandler implements EventHandler<MouseEvent> {
     }
 
     public void setCircleShape(int line, int column){
-        Shape circle = GridDrawer.getCircleShape(line, column);
+        Shape circle = GridDrawer.getCircleShape(line, column, drawer.currentColor);
         circle.setOpacity(0.5);
 
         Shape lineLeftRect = GridDrawer.getBorderLeftLineRectShape(line);
