@@ -17,7 +17,7 @@ public class TestAlgorithms {
 
     public static void main(String[] args) throws IndexOutOfBoundGridException {
 
-        test5();
+        test1();
 
     }
 
@@ -27,7 +27,7 @@ public class TestAlgorithms {
         double[] probs = {0.01,0.02,0.03,0.04,0.05,0.1,0.2,0.3};
 
         FileManager fm = new FileManager();
-        fm.openWrite("test1Results.txt");
+        fm.openWrite("test1PrimeResults.txt");
 
         fm.writeln("##############################");
 
