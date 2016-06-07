@@ -37,7 +37,7 @@ public class NewSaveLoadButtonHandler implements EventHandler<ActionEvent> {
 
     @Override
     public void handle(ActionEvent actionEvent) {
-        if(actionEvent.getSource().equals(drawer.newButton)) {
+        if(actionEvent.getSource().equals(drawer.newButton) || actionEvent.getSource().equals(drawer.paramsButton)) {
             Dialog<List<Integer>> dialog = new Dialog<>();
             dialog.setTitle("How many lines and columns?");
 
@@ -104,8 +104,17 @@ public class NewSaveLoadButtonHandler implements EventHandler<ActionEvent> {
             Optional<List<Integer>> result = dialog.showAndWait();
 
             result.ifPresent(linesColumns -> {
+                GridT<Color> g = drawer.grid;
                 drawer.grid = new GridT<Color>(linesColumns.get(0), linesColumns.get(1));
                 GridDrawer.LENGTH = linesColumns.get(2);
+                if(actionEvent.getSource().equals(drawer.paramsButton)){
+                    for(int line = 0; line < Math.min(g.getSizex(), drawer.grid.getSizex()); line++)
+                        for(int column = 0; column < Math.min(g.getSizey(), drawer.grid.getSizey()); column++){
+                            Color c = g.getPoint(line, column);
+                            if(c != null)
+                                drawer.grid.addPoint(line, column, c);
+                        }
+                }
                 drawer.reinitDraw();
             });
         }

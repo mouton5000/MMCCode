@@ -60,6 +60,7 @@ public class GridDrawer extends Application{
     public MenuItem neighborizationGreedyButton;
 
     public MenuItem newButton;
+    public MenuItem paramsButton;
     public MenuItem saveButton;
     public MenuItem loadButton;
     public MenuItem exportButton;
@@ -191,6 +192,10 @@ public class GridDrawer extends Application{
         newButton = new MenuItem();
         newButton.setText("New");
         newButton.setOnAction(slh);
+
+        paramsButton = new MenuItem();
+        paramsButton.setText("Update parameters");
+        paramsButton.setOnAction(slh);
 
         saveButton = new MenuItem();
         saveButton.setText("Save");
