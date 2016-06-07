@@ -77,10 +77,25 @@ public class ExportButtonHandler implements EventHandler<ActionEvent> {
             rbOne.setToggleGroup(group);
             rbDot.setToggleGroup(group);
 
+            Label sizeLb = new Label("Size of box (cm) : ");
+
+            TextField sizeTf = new TextField("0.5");
+            sizeTf.setMinWidth(50);
+            sizeTf.setMaxWidth(50);
+            sizeTf.textProperty().addListener(new ChangeListener<String>() {
+                @Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                    if (!newValue.matches("\\d*(\\.\\d*)?")) {
+                        sizeTf.setText(oldValue);
+                    }
+                }
+            });
+
             grid.add(exportFile, 1, 0);
             grid.add(browse, 0, 0);
             grid.add(rbOne, 0, 1);
             grid.add(rbDot, 1, 1);
+            grid.add(sizeLb, 0, 2);
+            grid.add(sizeTf, 1, 2);
 
             dialog.getDialogPane().setContent(grid);
 
@@ -89,6 +104,11 @@ public class ExportButtonHandler implements EventHandler<ActionEvent> {
                     List<Object> list = new ArrayList<Object>();
                     list.add(exportFile.getText());
                     list.add(rbOne.isSelected());
+                    String size = sizeTf.getText();
+                    if(size.length() == 0)
+                        list.add(0.5);
+                    else
+                        list.add(Double.valueOf(sizeTf.getText()));
                     return list;
                 }
                 return null;
@@ -99,15 +119,18 @@ public class ExportButtonHandler implements EventHandler<ActionEvent> {
             result.ifPresent(exportParameters -> {
                 String exportFileName = (String)exportParameters.get(0);
                 Boolean putOnes = (Boolean)exportParameters.get(1);
-                export(exportFileName, putOnes, drawer.grid);
+                Double length = (Double)exportParameters.get(2);
+                export(exportFileName, putOnes, length, drawer.grid);
             });
 
     }
 
-    private void export(String exportFileName, Boolean putOnes, GridT<Color> grid) {
+    private void export(String exportFileName, Boolean putOnes, double length, GridT<Color> grid) {
         FileManager fm = new FileManager();
         fm.openErase(exportFileName);
 
+
+        fm.writeln("\\renewcommand{\\gridsize}{"+length+"}");
 
         fm.writeln("\\begin{figure}");
         fm.writeln("    \\centering");
@@ -140,9 +163,9 @@ public class ExportButtonHandler implements EventHandler<ActionEvent> {
         }
 
         for(int line = 5; line-1 < grid.getSizex(); line += 5)
-            fm.writeln("\\draw ($(O)+(0,"+(0.25 + (line-1) * 0.5)+")$) node[anchor=east] {$"+line+"$};");
+            fm.writeln("\\draw ($(O)+(0,"+(length/2 + (line-1) * length)+")$) node[anchor=east] {$"+line+"$};");
         for(int column= 5; column-1 < grid.getSizey(); column += 5)
-            fm.writeln("\\draw ($(O)+("+(0.25 + (column-1) * 0.5)+",-0.3)$) node {$"+column+"$};");
+            fm.writeln("\\draw ($(O)+("+(length/2 + (column-1) * length)+",-0.3)$) node {$"+column+"$};");
 
         fm.writeln();
         fm.writeln("    \\end{tikzpicture}");
