@@ -49,9 +49,9 @@ public class ColorButtonHandler implements EventHandler<ActionEvent> {
         Label blueValue = new Label("Blue : ");
 
         Color color = drawer.currentColor;
-        int red = (int)color.getRed();
-        int blue = (int)color.getBlue();
-        int green = (int)color.getGreen();
+        int red = (int)(color.getRed() * 255);
+        int blue = (int)(color.getBlue() * 255);
+        int green = (int)(color.getGreen() * 255);
 
         TextField redTf = new TextField(""+red);
         redTf.setMinWidth(50);
